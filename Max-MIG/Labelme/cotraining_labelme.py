@@ -8,7 +8,7 @@ from data_labelme import *
 from util_labelme import *
 from torch.autograd import Variable
 from sklearn.metrics import  roc_auc_score
-from tensorboardX import SummaryWriter
+# from tensorboardX import SummaryWriter
 
 
 torch.cuda.set_device(Config.device_id)
@@ -188,7 +188,7 @@ def train_agg():
     ep_label_all = torch.FloatTensor(ep_label_all)
     #instance_num * expert_num
     expert_parameters = M_step(ep_label_all, right_outputs_all)
-    #exoert_num * num_classes * num_classes
+    #expert_num * num_classes * num_classes
     right_model_em.weights_update(expert_parameters)
 
 
@@ -340,6 +340,15 @@ if __name__ == '__main__':
 
     #p_pure = initial_priori(train_loader)
     #p = initial_priori(train_loader)
+
+    # my add
+    # worst_cotraining = float('inf')
+    # worst_dn = float('inf')
+    # worst_majority = float('inf')
+    # worst_mw = float('inf')
+    # worst_agg = float('inf')
+    # worst_mbem = float('inf')
+
     for epoch in range(Config.epoch_num):
 
         p_pure, p = train(epoch, p_pure, p)
@@ -352,6 +361,7 @@ if __name__ == '__main__':
         best_majority = max(best_majority,mv)
         best_mw = max(best_mw,mw)
         best_agg = max(best_agg,agg)
+        best_mbem = max(best_mbem, mbem)
 
         print("Max-MIG Acc:", best_cotraining)
         print("Majority Voting Acc:", best_majority)

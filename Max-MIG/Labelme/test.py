@@ -21,7 +21,7 @@ def get_data(train):
     :return:
     '''
     if train:
-        path = './prepared/'
+        path = './LabelMe/prepared/'
 
         data_train_vgg16 = load_data(path + "data_train_vgg16.npy").transpose(0, 3, 1, 2)
         #print("Training data shape:",data_train_vgg16.shape)
@@ -53,7 +53,7 @@ def get_data(train):
         # print(answers_bin_missings[0])
         return data_train_vgg16, answers_bin_missings, label_train
     else:
-        path = './prepared/'
+        path = './LabelMe/prepared/'
 
         data_test_vgg16 = load_data(path + "data_test_vgg16.npy").transpose(0, 3, 1, 2)
 
