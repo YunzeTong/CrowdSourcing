@@ -22,7 +22,7 @@ class Image_(torch.utils.data.Dataset):
             flist = os.path.join(root, "train_file.csv")
         else :
             flist = os.path.join(root, "val_file.csv")
-        self.imlist = self.flist_reader(flist)
+        self.imlist = self.flist_reader(flist, train)
         self.transform = img_transform
         self.train = train
 
@@ -36,13 +36,17 @@ class Image_(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.imlist)
 
-    def flist_reader(self, flist):
+    def flist_reader(self, flist, train):
         imlist = []
+        if train:
+            folder = "train/"
+        else:
+            folder = "test1/"
         with open(flist, 'r') as rf:
             for line in rf.readlines():
                 row = line.split(",")
 
-                impath =  Config.data_root + row[0]
+                impath =  Config.data_root + folder + (row[0] if train else row[0][row[0].index('.')+1:]) 
                 imlabel = row[1]
                 imlist.append((impath, int(imlabel)))
         return imlist

@@ -2,8 +2,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from dogsvscats.common import Config
-from dogsvscats.data import expert_tmatrix
+from common import Config
+from data import expert_tmatrix
 
 torch.cuda.set_device(Config.device_id)
 p = torch.FloatTensor([0.5,0.5])
