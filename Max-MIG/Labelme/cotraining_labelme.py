@@ -368,4 +368,4 @@ if __name__ == '__main__':
         print("DN Cotraining Acc:", best_dn)
         print("MW Cotraining Acc:", best_mw)
         print("AGG Cotraining Acc:", best_agg)
-        print("MBEM Cotraining Acc:", mbem)
+        print("MBEM Cotraining Acc:", best_mbem)

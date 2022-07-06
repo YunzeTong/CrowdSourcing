@@ -8,3 +8,5 @@ download_data.py
 my_result.xlsx
 deep_LabelMe.tar.gz
 LabelMe
+dataset
+*.zip
