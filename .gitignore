@@ -1,12 +1,11 @@
-cifar-10-python.tar.gz
 cifar-10-batches-py
-Max-MIG/Dogs vs. Cats/dogs-vs-cats.zip
 train
 test1
 __pycache__
 download_data.py
-my_result.xlsx
 deep_LabelMe.tar.gz
 LabelMe
 dataset
 *.zip
+*.tar.gz
+*.xlsx
