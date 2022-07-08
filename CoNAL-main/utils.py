@@ -3,7 +3,7 @@ from torch.utils import data
 import torch
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.model_selection import train_test_split
-import IPython
+# import IPython
 import os
 from torchvision.datasets.utils import download_url, check_integrity
 import torchvision.transforms as transforms
@@ -80,12 +80,12 @@ class Dataset(data.Dataset):
                 self.input_dims = X.shape[1]
                 self.answers_onehot = transform_onehot(answers, answers.shape[1], self.num_classes)
         if dataset == 'labelme':
-            data_path = '../ldmi/data/labelme/'
-            X = np.load(data_path + self.mode + '/data_%s_vgg16.npy' % self.mode)
-            y = np.load(data_path + self.mode + '/labels_%s.npy' % self.mode)
+            data_path = './data/labelme/'
+            X = np.load(data_path + '/data_%s_vgg16.npy' % self.mode)
+            y = np.load(data_path + '/labels_%s.npy' % self.mode)
             X = X.reshape(X.shape[0], -1)
             if mode == 'train':
-                answers = np.load(data_path + self.mode + '/answers.npy')
+                answers = np.load(data_path + '/answers.npy')
                 self.answers = answers
                 self.num_users = answers.shape[1]
                 classes = np.unique(answers)
@@ -99,7 +99,7 @@ class Dataset(data.Dataset):
                 # y = np.load(data_path + self.mode + '/labels_%s.npy' % self.mode)
                 # y = simple_majority_voting(answers)
             elif mode == 'train_dmi':
-                answers = np.load(data_path + self.mode + '/answers.npy')
+                answers = np.load(data_path + '/answers.npy')
                 self.answers = transform_onehot(answers, answers.shape[1], 8)
                 self.num_users = answers.shape[1]
                 classes = np.unique(answers)
