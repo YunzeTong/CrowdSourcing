@@ -4,10 +4,11 @@ test1
 __pycache__
 download_data.py
 LabelMe
-CoNAL-main/data/*
+CoNAL-main/data
 dataset
 *.zip
 *.tar.gz
 *.xlsx
 music_genre_classification
 sentiment_polarity
+Music

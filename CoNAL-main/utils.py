@@ -65,11 +65,11 @@ class Dataset(data.Dataset):
             self.mode = mode
 
         if dataset == 'music':
-            data_path = '../ldmi/data/music/'
-            X = np.load(data_path + 'data_%s.npy' % self.mode)
-            y = np.load(data_path + 'labels_%s.npy' % self.mode).astype(np.int)
+            data_path = './data/music/'
+            X = np.loadtxt(data_path + self.mode + '/data.csv', delimiter=',')
+            y = np.loadtxt(data_path + self.mode + '/labels.csv', delimiter=',').astype(np.int)
             if mode == 'train':
-                answers = np.load(data_path + '/answers.npy')
+                answers = np.loadtxt(data_path + self.mode + '/answers.csv', delimiter=',').astype(np.int)
                 self.answers = answers
                 self.num_users = answers.shape[1]
                 classes = np.unique(answers)

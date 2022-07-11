@@ -4,7 +4,7 @@ from torch import optim
 from copy import deepcopy
 import argparse
 from options import *
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 from workflow import *
 import random
 from conal import *
@@ -22,12 +22,15 @@ model_dir = './model/'
 train_dataset = Dataset(mode='train', dataset=dataset, sparsity=0)
 trn_loader = DataLoader(train_dataset, batch_size=1024, shuffle=True)
 
-valid_dataset = Dataset(mode='test', dataset=dataset)
+# valid_dataset = Dataset(mode='test', dataset=dataset)
+# val_loader = DataLoader(valid_dataset, batch_size=32, shuffle=True)
+
+# test_dataset = Dataset(mode='test', dataset=dataset)
+# tst_loader = DataLoader(test_dataset, batch_size=32, shuffle=True)
+raw_test_dataset = Dataset(mode='test', dataset=dataset)
+valid_dataset, test_dataset = random_split(raw_test_dataset, [200, 100])
 val_loader = DataLoader(valid_dataset, batch_size=32, shuffle=True)
-
-test_dataset = Dataset(mode='test', dataset=dataset)
 tst_loader = DataLoader(test_dataset, batch_size=32, shuffle=True)
-
 
 def main(opt, model=None):
     train_acc_list = []
@@ -56,7 +59,9 @@ def main(opt, model=None):
         print('Test acc: %.5f, Test f1: %.5f' % (test_acc, test_f1))
 
     test_acc, test_f1, _ = test(model=best_model, test_loader=tst_loader)
-    print('Test acc: %.5f, Test f1: %.5f' % (test_acc, test_f1))
+    print('-----------------------------------------------------')
+    print('Best model\'s Test acc: %.5f, Test f1: %.5f' % (test_acc, test_f1))
+    print('-----------------------------------------------------')
     return best_model, test_acc
 
 
