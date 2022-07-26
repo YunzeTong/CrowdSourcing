@@ -3,6 +3,7 @@ main - main file for training and testing
 """
 
 from model import *
+# from data import data_loader_agg, train_dataset_agg, train_loader, test_loader, confusion_matrix
 from data import *
 from util import *
 from tqdm import tqdm
@@ -57,6 +58,7 @@ def train(priori):
         majority = Variable(majority).long().cuda()
         left_optimizer_majority.zero_grad()
         left_outputs_majority = left_model_majority(images).float()
+        # left_outputs_majority = torch.log(left_outputs_majority).float() #add
         loss = nn.functional.nll_loss(left_outputs_majority, majority)
         loss.backward()
         left_optimizer_majority.step()
@@ -102,12 +104,13 @@ def train(priori):
         # True label
         left_optimizer_true.zero_grad()
         left_outputs = left_model_true(images)
+        # left_outputs = torch.log(left_outputs) #add
         loss = F.nll_loss(left_outputs, tlabel)
         loss.backward()
         left_optimizer_true.step()
         true_loss += loss
 
-    p = torch.squeeze(right_model_mig.get_prior().detach().cpu())
+    p = torch.squeeze(right_model_mig.get_prior().detach().cpu()) # 对于priority部分: p层不进行更新参数，p层在哪里加了？
 
     return p, majority_loss, cl_loss, dn_loss, mig_loss, true_loss
 
@@ -174,6 +177,7 @@ def test():
     left_model_majority.eval()
     net_cl.eval()
     net_dn.eval()
+    left_model_agg.eval() #add
     left_model_mig.eval()
     right_model_mig.eval()
     left_model_true.eval()
@@ -187,7 +191,7 @@ def test():
     total_corrects_true = 0
     total_corrects_forecast = 0
 
-    for batch_idx, (images, ep, labels) in enumerate(tqdm(test_loader)):
+    for batch_idx, (images, ep, labels) in enumerate(tqdm(test_loader)): 
         images = Variable(images).float().cuda()
         ep = Variable(ep).float().cuda()
         labels = labels.long().cuda()
@@ -196,12 +200,22 @@ def test():
         # Majority Vote
         outputs = left_model_majority(images)
         _, predicts = torch.max(outputs.data, 1)
+        with open('./see.txt', 'a') as f:
+            f.write("majority outputs:")
+            f.write(str(outputs))
+            f.write("outputs.data:")
+            f.write(str(outputs.data))
         total_corrects_majority += torch.sum(predicts == labels)
 
         # Crowds Layer
         out, outputs = net_cl(images)
         _, predicts = torch.max(outputs.data, 1)
         total_corrects_cl += torch.sum(predicts == labels)
+        # with open('./result.txt', 'a') as f:
+        #     f.write("crowds predicts:")
+        #     f.write(str(predicts))
+        #     f.write("labels:")
+        #     f.write(str(labels))
 
         # Doctor Net
         out = net_dn(images)
@@ -211,21 +225,41 @@ def test():
         outputs = outputs / Config.expert_num
         _, predicts = torch.max(outputs.data, 1)
         total_corrects_dn += torch.sum(predicts == labels)
+        # with open('./result.txt', 'a') as f:
+        #     f.write("docnet predicts:")
+        #     f.write(str(predicts))
+        #     f.write("labels:")
+        #     f.write(str(labels))
 
         # AggNet
         outputs = left_model_agg(images)
         _, predicts = torch.max(outputs.data, 1)
         total_corrects_agg += torch.sum(predicts == labels)
+        # with open('./result.txt', 'a') as f:
+        #     f.write("aggnet predicts:")
+        #     f.write(str(predicts))
+        #     f.write("labels:")
+        #     f.write(str(labels))
 
         # Max-MIG soft classifier
         outputs = left_model_mig(images)
         _, predicts = torch.max(outputs.data, 1)
         total_corrects_mig += torch.sum(predicts == labels)
+        # with open('./result.txt', 'a') as f:
+        #     f.write("maxmig soft predicts:")
+        #     f.write(str(predicts))
+        #     f.write("labels:")
+        #     f.write(str(labels))
 
         # Supervised
         outputs = left_model_true(images)
         _, predicts = torch.max(outputs.data, 1)
         total_corrects_true += torch.sum(predicts == labels)
+        # with open('./result.txt', 'a') as f:
+        #     f.write("supervised predicts:")
+        #     f.write(str(predicts))
+        #     f.write("labels:")
+        #     f.write(str(labels))
 
         # Max-MIG aggregated forecaster
         left_outputs = left_model_mig(images)
@@ -234,7 +268,22 @@ def test():
         outputs = (left_outputs * right_outputs) / prior
         _, predicts = torch.max(outputs.data, 1)
         total_corrects_forecast += torch.sum(predicts == labels)
+        # with open('./result.txt', 'a') as f:
+        #     f.write("maxmig aggre predicts:")
+        #     f.write(str(predicts))
+        #     f.write("labels:")
+        #     f.write(str(labels))
 
+
+    # check
+    # print("for check:\ntotal_corrects_majority:{}".format(total_corrects_majority))
+    # print("total_corrects_cl:{}".format(total_corrects_cl))
+    # print("total_corrects_dn:{}".format(total_corrects_dn))
+    # print("total_corrects_agg:{}".format(total_corrects_agg))
+    # print("total_corrects_mig:{}".format(total_corrects_mig))
+    # print("total_corrects_true:{}".format(total_corrects_true))
+    # print("total_corrects_forecast:{}".format(total_corrects_forecast))
+    # print("total_sample:{}".format(total_sample))
     acc_majority = float(total_corrects_majority) / float(total_sample)
     acc_cl = float(total_corrects_cl) / float(total_sample)
     acc_dn = float(total_corrects_dn) / float(total_sample)

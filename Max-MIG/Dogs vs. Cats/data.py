@@ -144,8 +144,8 @@ class Im_EP(torch.utils.data.Dataset):
         return left_data, right_data, labels
 
     def label_initial(self):
-        linear_sum = torch.sum(torch.tensor(self.right_data), dim=1)
-        _, major_label = torch.max(linear_sum, 1)
+        linear_sum = torch.sum(torch.tensor(self.right_data), dim=1)  # (batch_size, C)
+        _, major_label = torch.max(linear_sum, 1)   # 这里major_label是class的index，不是class本身
         self.label = major_label
 
     def label_update(self, new_label):
